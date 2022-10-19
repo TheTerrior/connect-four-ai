@@ -1,8 +1,9 @@
-use wgpu::{Instance, Backends};
+mod neuralnet;
+
+use std::{fs, io::Error};
 
 fn main() {
-    let instances = Instance::new(Backends::all());
-    for adapter in instances.enumerate_adapters(Backends::all()) {
-        println!("{:?}", adapter.get_info());
-    }
+    let target: String = String::from("tempdatabase.gn");
+    let result = fs::read(target).unwrap();
+    println!("hi");
 }
