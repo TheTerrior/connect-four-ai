@@ -2,8 +2,8 @@ mod neuralnet;
 
 use std::{fs, io::Error};
 use clap::{arg, command, value_parser, ArgAction, Command, Arg};
-use ncurses;
-
+use ncurses as nc;
+use cursive::views::{Dialog, TextView};
 
 /*
 Game options:
@@ -35,41 +35,90 @@ fn main() {
     //println!("hi");
 
 
-    testing();
+    //testing_ncurses();
+    testing_cursive();
 
 }
 
-fn testing() {
+fn testing_cursive() {
+    // Creates the cursive root - required for every application.
+    let mut siv = cursive::default();
+
+    // Creates a dialog with a single "Quit" button
+    siv.add_layer(Dialog::around(TextView::new("Hello Dialog!"))
+                         .title("Cursive")
+                         .button("Quit", |s| s.quit()));
+
+    // Starts the event loop.
+    siv.run();
+}
+
+fn testing_ncurses() {
+    const REGULAR_PAIR: i16 = 0;
+    const HIGHLIGHT_PAIR: i16 = 1;
 
     /* Start ncurses. */
-    ncurses::initscr();
+    nc::initscr();
 
-    /* Print to the back buffer. */
-    ncurses::addstr("Hello, world!");
+    nc::noecho();       //disable key typing
+    nc::curs_set(nc::CURSOR_VISIBILITY::CURSOR_INVISIBLE);    //disable cursor
 
-    /* Print some unicode(Chinese) string. */
-    // addstr("Great Firewall dislike VPN protocol.\nGFW 不喜欢 VPN 协议。");
+    nc::start_color();
+    nc::init_pair(REGULAR_PAIR, nc::COLOR_WHITE, nc::COLOR_BLACK);
+    nc::init_pair(HIGHLIGHT_PAIR, nc::COLOR_BLACK, nc::COLOR_WHITE);
 
-    /* Update the screen. */
-    ncurses::refresh();
+    let items = vec![
+        "Write the todo app",
+        "Buy a bread",
+        "Make a cup of tea",
+    ];
+
+    let mut item_curr: usize = 0; //the item that is selected by default on startup
 
     /* Wait for a key press. */
     //let key: i32 = getch();
 
     let mut running = true;
     while running {
-        let key_raw = ncurses::getch();
-        let key: char = key_raw as u8 as char;
+        for (index, item) in items.iter().enumerate() {
+            let pair = {
+                if item_curr == index {
+                    HIGHLIGHT_PAIR
+                } else {
+                    REGULAR_PAIR
+                }
+            };
 
-        if key == 'q' {
-            running = false;
-        } else {
-            //addstr(&key.to_string());
-            //refresh();
+            nc::attron(nc::COLOR_PAIR(pair));   //start coloring
+            nc::mv(index as i32, 1);            //move to the position (y,x), so in this case one off of the start of the 'index' row
+            nc::addstr(*item);                  //print
+            nc::attroff(nc::COLOR_PAIR(pair));  //end coloring
         }
+
+        nc::refresh();
+
+        let key = nc::getch();
+
+        // match keys that do not have a character equivalent
+        match key {
+            65 => if item_curr > 0 {item_curr -= 1;},                   //up
+            66 => if item_curr < items.len() - 1 {item_curr += 1;},     //down
+            _ => {
+
+                //match keys that have a character equivalent
+                match key as u8 as char {
+                    'q' => running = false,
+                    '\n' => running = false,
+                    'k' => if item_curr > 0 {item_curr -= 1;},
+                    'j' => if item_curr < items.len() - 1 {item_curr += 1;}
+                    _ => {},
+                }
+            }
+        }
+
     }
 
     /* Terminate ncurses. */
-    ncurses::endwin();
+    nc::endwin();
 
 }
