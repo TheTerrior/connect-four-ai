@@ -30,8 +30,9 @@ impl NeuralNetwork {
 
     /// Run the input through the neural network, consider stripping for runtime reasons
     pub fn calculate(&self, input: &Vec<f32>) -> Vec<f32> {
-        let mut mat0: Vec<f32> = vec![0.0; self.max_size as usize];
-        let mut mat1: Vec<f32> = vec![0.0; self.max_size as usize];
+        let mut mat0: Vec<f32> = vec![0.0; self.max_size];
+        let mut mat1: Vec<f32> = input.clone(); //assumes the input is the right size
+        mat1.extend(vec![0.0; self.max_size-self.shape[0]].iter()); //make the input the right size
 
         // calculate forward propagation
         let mut layer_offset = 0; //offset for each layer's weights from the start of the vector
