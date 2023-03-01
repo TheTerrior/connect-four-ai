@@ -1,5 +1,5 @@
 # ConnectFourAI
-An AI for Connect Four that evolves using a genetic algorithm! Made in Rust!
+An AI for Connect Four that evolves using a genetic algorithm.
 
 ## License
-This software is dual-licensed under GPL Version 2 and/or GPL Version 3. You may use this software according to these licenses as is most appropriate for your project on a case-by-case basis. Both licenses can be found in the root directory of the repository.
+This work is dual-licensed under GPL Version 2 and GPL Version 3. You may choose between these licenses on a case-by-case basis.
