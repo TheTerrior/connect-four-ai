@@ -120,5 +120,5 @@ fn testing_ncurses() {
 
     /* Terminate ncurses. */
     nc::endwin();
-
 }
+
